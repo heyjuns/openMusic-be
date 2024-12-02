@@ -28,7 +28,7 @@ class AlbumsService {
     return result.rows[0].id;
   }
 
-  async getById(id) {
+  async getAlbumById(id) {
     const query = {
       text: 'SELECT * FROM albums WHERE id = $1',
       values: [id],
@@ -42,11 +42,11 @@ class AlbumsService {
     return result.rows.map(albumDBtoModel)[0];
   }
 
-  async putById(id, { title, year }) {
+  async editAlbumById(id, { name, year }) {
     const updatedAt = new Date().toISOString();
     const query = {
-      text: 'UPDATE albums SET title = $1, body = $2, tags = $3, updated_at = $4 WHERE id = $5 RETURNING id',
-      values: [title, year, updatedAt, id],
+      text: 'UPDATE albums SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id',
+      values: [name, year, updatedAt, id],
     };
 
     const result = await this.pool.query(query);
@@ -56,7 +56,7 @@ class AlbumsService {
     }
   }
 
-  async deleteById(id) {
+  async deleteAlbumById(id) {
     const query = {
       text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
       values: [id],

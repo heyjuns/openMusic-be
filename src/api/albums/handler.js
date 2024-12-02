@@ -21,7 +21,8 @@ class AlbumsHandler {
     return response;
   }
 
-  async getById(request) {
+  // eslint-disable-next-line no-unused-vars
+  async getById(request, h) {
     const { id } = request.params;
     const album = await this.service.getAlbumById(id);
     return {
