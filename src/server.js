@@ -1,4 +1,6 @@
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
+
 const albums = require('./api/albums');
 const AlbumsService = require('./services/postgres/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
@@ -10,6 +12,11 @@ const SongsValidator = require('./validator/songs');
 const users = require('./api/users');
 const UsersService = require('./services/postgres/UsersService');
 const UsersValidator = require('./validator/users');
+
+const authentications = require('./api/authentications');
+const AuthenticationsService = require('./services/postgres/AuthenticationsService');
+const TokenManager = require('./tokenize/TokenManager');
+const AuthenticationsValidator = require('./validator/authentications');
 
 const ClientError = require('./exceptions/ClientError');
 require('dotenv').config();
@@ -28,7 +35,12 @@ const init = async () => {
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
   const usersService = new UsersService();
-
+  const authenticationsService = new AuthenticationsService();
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+  ]);
   await server.register([
     {
       plugin: albums,
@@ -49,6 +61,15 @@ const init = async () => {
       options: {
         service: usersService,
         validator: UsersValidator,
+      },
+    },
+    {
+      plugin: authentications,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
       },
     },
   ]);
