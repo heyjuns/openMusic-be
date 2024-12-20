@@ -35,4 +35,14 @@ const songDBtoModel = ({
   // updatedAt: updated_at,
 });
 
-module.exports = { albumDBtoModel, songDBtoModel };
+const playlistDBtoModel = ({
+  id,
+  name,
+  owner,
+}) => ({
+  id,
+  name,
+  username: owner,
+});
+
+module.exports = { albumDBtoModel, songDBtoModel, playlistDBtoModel };
