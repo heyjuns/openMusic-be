@@ -10,7 +10,7 @@ const routes = (handler) => [
   {
     method: 'GET',
     path: '/playlists',
-    handler: () => handler.getPlaylists(),
+    handler: (request, h) => handler.getPlaylists(request, h),
     options: {
       auth: 'musicdb_jwt',
     },
