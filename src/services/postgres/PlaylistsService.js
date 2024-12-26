@@ -62,14 +62,19 @@ class PlaylistsService {
   async addSongToPlaylist({ playlistId, songId }) {
     const id = `song-${nanoid(16)}`;
     const query = {
-      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
-      values: [id, playlistId, songId],
+      text: `WITH song_check AS (
+               SELECT id FROM songs WHERE id = $1
+             )
+             INSERT INTO playlist_songs (id, playlist_id, song_id)
+             SELECT $2, $3, id FROM song_check
+             RETURNING id`,
+      values: [songId, id, playlistId],
     };
-    const result = await this.pool.query(query);
-    console.log(result.rows);
 
-    if (!result.rows[0].id) {
-      throw new InvariantError('Lagu gagal ditambahkan ke playlist');
+    const result = await this.pool.query(query);
+
+    if (!result.rows.length) {
+      throw new NotFoundError('Lagu tidak ditemukan atau gagal ditambahkan ke playlist');
     }
   }
 
@@ -107,14 +112,14 @@ class PlaylistsService {
 
   async deleteSongFromPlaylistById(id) {
     const query = {
-      text: 'DELETE FROM Playlist_songs WHERE id = $1 RETURNING id',
+      text: 'DELETE FROM Playlist_songs WHERE song_id = $1 RETURNING id',
       values: [id],
     };
-
+    console.log(query);
     const result = await this.pool.query(query);
 
     if (!result.rows.length) {
-      throw new NotFoundError('Song Playlist gagal dihapus. Id tidak ditemukan');
+      throw new InvariantError('Song Playlist gagal dihapus. Id tidak ditemukan');
     }
   }
 
