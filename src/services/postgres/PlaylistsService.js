@@ -12,7 +12,7 @@ class PlaylistsService {
   }
 
   async createPlaylist({ name, owner }) {
-    const id = nanoid(16);
+    const id = `playlist-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
     const query = {
@@ -60,32 +60,49 @@ class PlaylistsService {
   }
 
   async addSongToPlaylist({ playlistId, songId }) {
-    const id = nanoid(16);
-    const createdAt = new Date().toISOString();
+    const id = `song-${nanoid(16)}`;
     const query = {
-      text: 'INSERT INTO Playlist_songs VALUES($1, $2, $3, $4) RETURNING id',
-      values: [id, playlistId, songId, createdAt],
+      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
+      values: [id, playlistId, songId],
     };
-
     const result = await this.pool.query(query);
+    console.log(result.rows);
 
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
   }
 
-  async getSongsFromPlaylist(playlistId) {
-    const query = {
+  async getSongsFromPlaylist({ credentialId, playlistId }) {
+    const queryPlaylist = {
+      text: `SELECT playlists.id, playlists.name, users.username AS owner
+             FROM playlists
+             JOIN users ON playlists.owner = users.id
+             WHERE playlists.owner = $1 AND playlists.id = $2`,
+      values: [credentialId, playlistId],
+    };
+
+    const querySongs = {
       text: `SELECT songs.id, songs.title, songs.performer
              FROM songs
-             JOIN Playlist_songs ON Playlist_songs.song_id = songs.id
-             WHERE Playlist_songs.playlist_id = $1`,
+             JOIN playlist_songs ON playlist_songs.song_id = songs.id
+             WHERE playlist_songs.playlist_id = $1`,
       values: [playlistId],
     };
 
-    const result = await this.pool.query(query);
+    const [resultPlaylist, resultSongs] = await Promise.all([
+      this.pool.query(queryPlaylist),
+      this.pool.query(querySongs),
+    ]);
 
-    return result.rows;
+    if (!resultPlaylist.rows.length) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
+
+    return {
+      ...playlistDBtoModel(resultPlaylist.rows[0]),
+      songs: resultSongs.rows,
+    };
   }
 
   async deleteSongFromPlaylistById(id) {

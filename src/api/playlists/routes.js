@@ -23,21 +23,30 @@ const routes = (handler) => [
       auth: 'musicdb_jwt',
     },
   },
-  // {
-  //   method: 'POST',
-  //   path: '/playlists/{id}/songs',
-  //   handler: (request, h) => handler.create(request, h),
-  // },
-  // {
-  //   method: 'GET',
-  //   path: '/playlists/{id}/songs',
-  //   handler: () => handler.get(),
-  // },
-  // {
-  //   method: 'DELETE',
-  //   path: '/playlists/{id}/songs',
-  //   handler: (request, h) => handler.deleteById(request, h),
-  // },
+  {
+    method: 'POST',
+    path: '/playlists/{id}/songs',
+    handler: (request, h) => handler.addSong(request, h),
+    options: {
+      auth: 'musicdb_jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/playlists/{id}/songs',
+    handler: (request, h) => handler.getSongsFromPlaylistHandler(request, h),
+    options: {
+      auth: 'musicdb_jwt',
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/playlists/{id}/songs',
+    handler: (request, h) => handler.deleteSongFromPlaylistByIdHandler(request, h),
+    options: {
+      auth: 'musicdb_jwt',
+    },
+  },
 ];
 
 module.exports = routes;
