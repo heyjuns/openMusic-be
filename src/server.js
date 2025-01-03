@@ -1,6 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 const path = require('path');
+const Inert = require('@hapi/inert');
 
 const albums = require('./api/albums');
 const AlbumsService = require('./services/postgres/AlbumsService');
@@ -24,9 +26,9 @@ const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
 // uploads
-const uploads = require('./api/uploads');
+// const uploads = require('./api/uploads');
 const StorageService = require('./services/storage/StorageService');
-const UploadsValidator = require('./validator/uploads');
+// const UploadsValidator = require('./validator/uploads');
 
 // eslint-disable-next-line no-underscore-dangle
 const _exports = require('./api/exports');
@@ -57,6 +59,9 @@ const init = async () => {
     {
       plugin: Jwt,
     },
+    {
+      plugin: Inert,
+    },
   ]);
 
   server.auth.strategy('musicdb_jwt', 'jwt', {
@@ -81,6 +86,7 @@ const init = async () => {
       options: {
         service: albumsService,
         validator: AlbumsValidator,
+        storageService,
       },
     },
     {
@@ -121,13 +127,13 @@ const init = async () => {
         rabbitService: ProducerService,
       },
     },
-    {
-      plugin: uploads,
-      options: {
-        service: storageService,
-        validator: UploadsValidator,
-      },
-    },
+    // {
+    //   plugin: uploads,
+    //   options: {
+    //     service: storageService,
+    //     validator: UploadsValidator,
+    //   },
+    // },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
