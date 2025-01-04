@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 class AlbumsHandler {
   constructor(service, validator, storageService) {
     this.service = service;
@@ -77,6 +78,45 @@ class AlbumsHandler {
     });
     response.code(201);
     return response;
+  }
+
+  async likeAlbumById(request, h) {
+    const { id: albumId } = request.params;
+    const { id: userId } = request.auth.credentials;
+    await this.service.likeAlbum({ albumId, userId });
+
+    const response = h.response({
+      status: 'success',
+      message: 'Album berhasil dilike',
+
+    });
+    response.code(201);
+    return response;
+  }
+
+  async unlikeAlbumById(request, h) {
+    const { id } = request.params;
+    const { id: userId } = request.auth.credentials;
+
+    await this.service.unlikeAlbum(id, userId);
+
+    return {
+      status: 'success',
+      message: 'Album berhasil diunlike',
+    };
+  }
+
+  async getLikesAlbumById(request, h) {
+    const { id } = request.params;
+
+    const likes = await this.service.getALbumLikes(id);
+
+    return {
+      status: 'success',
+      data: {
+        likes,
+      },
+    };
   }
 }
 

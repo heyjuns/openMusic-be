@@ -43,6 +43,30 @@ const routes = (handler) => [
       },
     },
   },
+  {
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.likeAlbumById(request, h),
+    options: {
+      auth: 'musicdb_jwt',
+    },
+  },
+  {
+    method: 'DELETE',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.unlikeAlbumById(request, h),
+    options: {
+      auth: 'musicdb_jwt',
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.getLikesAlbumById(request, h),
+    // options: {
+    //   auth: 'musicdb_jwt',
+    // },
+  },
 ];
 
 module.exports = routes;

@@ -7,6 +7,7 @@ const Inert = require('@hapi/inert');
 const albums = require('./api/albums');
 const AlbumsService = require('./services/postgres/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
+const StorageService = require('./services/storage/StorageService');
 
 const songs = require('./api/songs');
 const SongsService = require('./services/postgres/SongsService');
@@ -24,11 +25,6 @@ const authentications = require('./api/authentications');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
-
-// uploads
-// const uploads = require('./api/uploads');
-const StorageService = require('./services/storage/StorageService');
-// const UploadsValidator = require('./validator/uploads');
 
 // eslint-disable-next-line no-underscore-dangle
 const _exports = require('./api/exports');
@@ -127,13 +123,6 @@ const init = async () => {
         rabbitService: ProducerService,
       },
     },
-    // {
-    //   plugin: uploads,
-    //   options: {
-    //     service: storageService,
-    //     validator: UploadsValidator,
-    //   },
-    // },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
