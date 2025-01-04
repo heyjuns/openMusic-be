@@ -111,12 +111,21 @@ class AlbumsHandler {
 
     const likes = await this.service.getALbumLikes(id);
 
-    return {
+    // return {
+    //   status: 'success',
+    //   data: {
+    //     likes,
+    //   },
+    // };
+
+    const response = h.response({
       status: 'success',
       data: {
-        likes,
+        likes: likes.result,
       },
-    };
+    });
+    if (likes.from === 'cache') response.header('X-Data-Source', 'cache');
+    return response;
   }
 }
 
