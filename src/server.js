@@ -51,7 +51,7 @@ const init = async () => {
   const usersService = new UsersService();
   const playlistsService = new PlaylistsService();
   const authenticationsService = new AuthenticationsService();
-  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const storageService = new StorageService(path.resolve(__dirname, 'api/albums/file/images'));
   await server.register([
     {
       plugin: Jwt,
