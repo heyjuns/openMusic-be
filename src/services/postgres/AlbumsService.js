@@ -143,7 +143,7 @@ class AlbumsService {
       };
 
       const result = await this.pool.query(query);
-      await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rowCount), 1800);
+      await this.cacheService.set(`albums:${albumId}`, JSON.stringify(result.rowCount));
       return { result: result.rowCount, from: 'data' };
     }
   }
